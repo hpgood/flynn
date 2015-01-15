@@ -269,6 +269,16 @@ func (c *Client) GetApp(appID string) (*ct.App, error) {
 	return app, c.Get(fmt.Sprintf("/apps/%s", appID), app)
 }
 
+// GetDeployment returns a deployment queued on the deployer.
+func (c *Client) GetDeployment(deploymentID string) (*ct.Deployment, error) {
+	res := &ct.Deployment{}
+	return res, c.Get(fmt.Sprintf("/deployments/%s", deploymentID), res)
+}
+
+func (c *Client) DeployApp(appID string, out chan<- *ct.DeploymentEvent) (stream.Stream, error) {
+	return c.Stream("POST", fmt.Sprintf("/apps/%s/deploy", appID), nil, out)
+}
+
 // StreamJobEvents streams job events to the output channel.
 func (c *Client) StreamJobEvents(appID string, lastID int64, output chan<- *ct.JobEvent) (stream.Stream, error) {
 	header := http.Header{
